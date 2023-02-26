@@ -32,6 +32,6 @@ func main() {
 		fmt.Println("Current task is ", task)
 	}
 
-	fmt.Println("main completed")
+	fmt.Println("server completed")
 	time.Sleep(2000 * time.Millisecond)
 }

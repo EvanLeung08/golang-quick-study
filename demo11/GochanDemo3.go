@@ -23,5 +23,5 @@ func main() {
 		}
 	}
 
-	fmt.Println("main 线程结束")
+	fmt.Println("server 线程结束")
 }
