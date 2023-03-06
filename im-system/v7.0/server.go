@@ -5,6 +5,7 @@ import (
 	"io"
 	"net"
 	"sync"
+	"time"
 )
 
 type Server struct {
@@ -34,6 +35,7 @@ func (this *Server) Handler(conn net.Conn) {
 
 	user.Online()
 
+	liveChan := make(chan bool)
 	//启动协程监听用户输入
 	go func() {
 		for {
@@ -44,7 +46,6 @@ func (this *Server) Handler(conn net.Conn) {
 				return
 			}
 			if n == 0 {
-				this.Broadcast(user, "已下线")
 				//移除用户
 				user.Offline()
 				return
@@ -53,11 +54,25 @@ func (this *Server) Handler(conn net.Conn) {
 			msg := string(buf[:n-1])
 			//处理消息
 			user.processMessage(msg)
+			//监听用户活跃状态
+			liveChan <- true
 		}
 	}()
 
 	//阻塞当前协程
-	select {}
+	for {
+		select {
+		case <-liveChan:
+		case <-time.After(20 * time.Second):
+			//用户已经超时
+			//准备剔除用户
+			user.SendMsg("你已经被踢了\n")
+			close(user.Channel)
+			conn.Close()
+			//退出当前Handler
+			return
+		}
+	}
 
 }
 
@@ -69,7 +84,13 @@ func (this *Server) ListenMessage() {
 		//获取所有用户实例
 		for _, user := range this.OnlineMap {
 			user.Channel <- msg
+			err := recover()
+			if err != nil {
+				fmt.Println("监听用户消息过程中接受到异常", err)
+			}
+			continue
 		}
+
 		this.MapLock.Unlock()
 	}
 

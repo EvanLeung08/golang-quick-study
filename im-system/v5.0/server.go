@@ -46,7 +46,7 @@ func (this *Server) Handler(conn net.Conn) {
 			if n == 0 {
 				this.Broadcast(user, "已下线")
 				//移除用户
-				this.OnlineMap[user.Name] = nil
+				user.Offline()
 				return
 			}
 
