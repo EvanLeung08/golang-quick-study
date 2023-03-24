@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"net/http"
 )
 
@@ -24,7 +25,7 @@ func main() {
 	var content string
 	for {
 		n, err := resp.Body.Read(buf)
-		if err != nil {
+		if err != nil && err != io.EOF {
 			break
 		}
 		if n == 0 {
