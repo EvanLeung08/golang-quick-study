@@ -2,7 +2,7 @@ package lib1
 
 import (
 	"fmt"
-	_ "golang-quick-study/demo4/lib2"
+	_ "golang-quick-study/basicConcept/demo4/lib2"
 )
 
 func init() {

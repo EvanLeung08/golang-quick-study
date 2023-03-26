@@ -3,8 +3,8 @@ package main
 import (
 	"fmt"
 	"golang-quick-study/basicConcept/demo4/lib1"
+	_ "golang-quick-study/basicConcept/demo4/lib1"
 	"golang-quick-study/basicConcept/demo4/lib2"
-	_ "golang-quick-study/demo4/lib1"
 )
 
 func init() {
