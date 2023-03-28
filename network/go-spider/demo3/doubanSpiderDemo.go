@@ -24,7 +24,7 @@ func main() {
 }
 
 func doWork(start int, end int) {
-	channel := make(chan int)
+	channel := make(chan int, end-start+1)
 	//根据页面遍历远程爬取页面
 	for i := start; i <= end; i++ {
 		go crawlDB(i, channel)
@@ -79,14 +79,17 @@ func crawlDB(page int, channel chan int) {
 
 func HttpGet(url string) (result string, err error) {
 	fmt.Println("url:", url)
-	resp, httpErr := http.Get(url)
+	client := &http.Client{}
+	req, err := http.NewRequest("GET", url, nil)
+	//避免豆瓣反爬虫，加入user-agent
+	req.Header.Add("User-Agent", "myClient")
+	resp, httpErr := client.Do(req)
 	if httpErr != nil {
 		fmt.Println("http.Get err:", err)
 		err = httpErr
 		return
 	}
 	defer resp.Body.Close()
-	fmt.Printf("body:%v", resp)
 	//读取响应体
 	buf := make([]byte, 4098)
 	for {
