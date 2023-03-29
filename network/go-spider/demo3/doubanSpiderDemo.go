@@ -66,7 +66,7 @@ func crawlDB(page int, channel chan int) {
 	pplCountRegex := regexp.MustCompile("<span>(.*?)人评价</span>")
 	pplCount := pplCountRegex.FindAllStringSubmatch(result, -1)
 
-	file.WriteString("Tile|score|pplCount")
+	file.WriteString("Tile|Score|pplCount")
 	fmt.Println("title count:", len(titles))
 	for i := 0; i < len(titles); i++ {
 		file.WriteString(titles[i][1] + "|" + scores[i][1] + "|" + pplCount[i][1] + "\n")
@@ -78,12 +78,13 @@ func crawlDB(page int, channel chan int) {
 }
 
 func HttpGet(url string) (result string, err error) {
-	fmt.Println("url:", url)
 	client := &http.Client{}
 	req, err := http.NewRequest("GET", url, nil)
 	//避免豆瓣反爬虫，加入user-agent
 	req.Header.Add("User-Agent", "myClient")
 	resp, httpErr := client.Do(req)
+
+	fmt.Println("resp:", resp)
 	if httpErr != nil {
 		fmt.Println("http.Get err:", err)
 		err = httpErr
@@ -95,12 +96,11 @@ func HttpGet(url string) (result string, err error) {
 	for {
 
 		n, readErr := resp.Body.Read(buf)
-		fmt.Println("n:", n)
 		if n == 0 {
 			break
 		}
 		if readErr != nil && readErr != io.EOF {
-			fmt.Println("请求网页异常:", readErr)
+			fmt.Println("读取响应体异常:", readErr)
 			err = readErr
 			break
 		}
