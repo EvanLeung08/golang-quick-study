@@ -6,10 +6,9 @@ import (
 	"os/exec"
 )
 
-/*
-*
-Execute external command
-*/
+/**
+ * @Description: 1. Execute a simple command
+ */
 func main() {
 
 	dateCmd := exec.Command("date")
